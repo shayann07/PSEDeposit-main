@@ -85,7 +85,7 @@ app.post('/api/create-transaction', async (req, res) => {
     params.append('custom', custom);
     params.append('format', 'json');
     params.append('nonce', nonce);
-    params.append('ipn_url', 'https://ailedgerdeposit.onrender.com/api/ipn-handler');
+    params.append('ipn_url', 'https://psedeposit-main.onrender.com/api/ipn-handler');
 
     const postData = params.toString();
     const hmac = generateHmac(postData);
