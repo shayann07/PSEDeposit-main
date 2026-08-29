@@ -1,42 +1,20 @@
 # PSEDeposit (Cryptocurrency Deposit & Referral Microservice)
 
-[![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org)
-[![Express](https://img.shields.io/badge/Express-5.1.0-blue.svg)](https://expressjs.com)
-[![Firebase](https://img.shields.io/badge/Firebase-Admin%2013-orange.svg)](https://firebase.google.com)
+[![Platform](https://img.shields.io/badge/Platform-Firebase-FFCA28?logo=firebase&logoColor=black)]()
+[![Language](https://img.shields.io/badge/Language-Node.js-339933?logo=nodedotjs&logoColor=white)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-PSEDeposit is a resilient Node.js / Express microservice that acts as an automated cryptocurrency deposit gateway and multi-tier referral reward processing engine for stock and trading platforms.
+> Backend deposit service that lets the PSE user app accept USDT-BEP20 top-ups through CoinPayments â€” handles the IPN callback and credits the user's wallet.
 
 ---
 
-## Architecture & Transaction Workflow
+## 📖 Overview
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Client as Mobile Client App
-    participant API as PSEDeposit Microservice
-    participant CP as CoinPayments Gateway
-    participant FS as Google Cloud Firestore
-
-    Client->>API: POST /api/create-transaction (amount, currency, userId)
-    API->>FS: Fetch & Increment Monotonic Nonce
-    API->>CP: create_transaction (HMAC-SHA512 authenticated)
-    CP-->>API: Return Deposit Address & QR Info
-    API->>FS: Save Pending Transaction Document
-    API-->>Client: Return Transaction Details & Address
-
-    Note over Client,CP: User sends cryptocurrency to address
-
-    CP->>API: POST /api/ipn-handler (Instant Payment Notification)
-    API->>FS: Atomic Transaction:
-    Note over API,FS: 1. Verify status >= 100<br/>2. Update transaction status = approved<br/>3. Increment user balance & totalDeposit<br/>4. Calculate & credit 5% referral reward
-    API-->>CP: 200 OK (IPN Processed)
-```
+Backend deposit service that lets the PSE user app accept USDT-BEP20 top-ups through CoinPayments â€” handles the IPN callback and credits the user's wallet.
 
 ---
 
-## Key Features
+## ✨ Key Features
 
 - **Automated Deposit Generation**: Seamlessly bridges CoinPayments API with cryptocurrency deposit creation across 100+ digital currencies.
 - **Monotonic Nonce Management**: Persistently coordinates transactional sequence numbers using Firestore atomic increments to eliminate race conditions.
@@ -46,75 +24,42 @@ sequenceDiagram
 
 ---
 
-## API Endpoints
+---
 
-### 1. Health Check
-- **`GET /health`**
-- **Response:** `200 OK`
-  ```json
-  { "status": "ok" }
-  ```
+## 🛠️ Technology Stack
 
-### 2. Create Deposit Transaction
-- **`POST /api/create-transaction`**
-- **Body:**
-  ```json
-  {
-    "amount": 50.00,
-    "currency1": "USD",
-    "currency2": "USDT.TRC20",
-    "buyer_email": "investor@example.com",
-    "custom": "USER_FIREBASE_UID"
-  }
-  ```
-- **Response:** `200 OK` (CoinPayments transaction metadata, deposit address, timeout, and QR URL).
-
-### 3. Query Transaction Status
-- **`GET /api/transaction/:txid`**
-- **Response:** Real-time on-chain confirmation status and balance progress from CoinPayments.
-
-### 4. CoinPayments IPN Webhook
-- **`POST /api/ipn-handler`**
-- **Description:** Receives webhook notifications from CoinPayments, validates confirmation status, updates user accounts, and triggers referral rewards atomically.
+| Component / Layer | Technology |
+|---|---|
+| **Platform** | Firebase / GCP |
+| **Primary Language** | Node.js |
+| **Architecture** | MVVM / Clean Architecture |
+| **License** | Open Source (MIT) |
 
 ---
 
-## Setup & Local Development
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 20+ runtime
-- Google Cloud Firebase Project with Firestore enabled
-- CoinPayments Merchant Account
+- Node.js 18 / 20+
+- Firebase CLI (`npm install -g firebase-tools`)
 
-### Step-by-Step Installation
-
-1. **Clone the Repository:**
+### Setup & Run
+1. Clone the repository:
    ```bash
    git clone https://github.com/shayann07/PSEDeposit-main.git
    cd PSEDeposit-main
    ```
-
-2. **Install Dependencies:**
+2. Install dependencies:
    ```bash
    npm install
    ```
-
-3. **Configure Environment Variables:**
-   Copy the example `.env` file:
+3. Deploy functions:
    ```bash
-   cp .env.example .env
-   ```
-   Fill in your CoinPayments API credentials and Firebase Service Account JSON.
-
-4. **Start the Server:**
-   ```bash
-   npm start
+   firebase deploy --only functions
    ```
 
 ---
 
-## License
+## 📄 License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
-
-Copyright (c) 2026 **shayann07**
+This project is licensed under the [MIT License](LICENSE) — Copyright (c) 2026 [shayann07](https://github.com/shayann07).
